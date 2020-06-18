@@ -1,6 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import DB from './database'
+
 console.log('Hello from tsx!')
 
 interface Props {};
@@ -38,6 +40,19 @@ function ProblemItem(props: Problem) {
 class ProblemList extends React.Component<Props, ProblemListState> {
   state: ProblemListState = {
     problems: [createDummyProblem(1), createDummyProblem(2)]
+  }
+
+  constructor(props: Object) {
+    super(props);
+    DB.getDB().then((db) => {
+      DB.getCurrentUser().then((user) => {
+        db.collection(`/users/${user.uid}/problems/`).get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            console.log(`${doc.id} => ${doc.data()}`);
+          });
+        });
+      });
+    });
   }
 
   render() {
