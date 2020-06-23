@@ -3,8 +3,6 @@ import ReactDOM from 'react-dom'
 
 import DB from './database'
 
-console.log('Hello from tsx!')
-
 interface Props {};
 
 interface Problem {
@@ -47,9 +45,12 @@ class ProblemList extends React.Component<Props, ProblemListState> {
     DB.getDB().then((db) => {
       DB.getCurrentUser().then((user) => {
         db.collection(`/users/${user.uid}/problems/`).get().then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            console.log(`${doc.id} => ${doc.data()}`);
+          const problemList = querySnapshot.docs.map((d) => {
+            return ProblemItem({...d.data(), ...{id: d.id}});
           });
+          this.setState({
+            problems: problemList
+          })
         });
       });
     });
